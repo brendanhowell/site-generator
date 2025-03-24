@@ -714,22 +714,23 @@ Also notable is that we set the template to `rss.lisp`. Templates don't need to 
 
 ```commonlisp
 $(xml
-   (:rss :version "2.0"
+   (:rss :version "2.0" :|xmlns:atom| "http://www.w3.org/2005/Atom"
          (:channel 
           (:title "Example Blog")
           (:link "http://example-blog-url.com/")
+          (:|atom:link| :href "http://example-blog-url.com/rss.xml" :rel "self"
+                           :type "application/rss+xml")
           (:description "An example blog for site-generator")
-          (:lastBuildDate (str (build-time)))
+          (:|pubDate| (str (build-time)))
+          (:|lastBuildDate| (str (build-time)))
           (:language "en-us")
           (loop for page in (get-pages "pages" :number 2)
              do (htm
                  (:item
                   (:title (str (page-title page)))
-                  (:link (str (page-address page)))
+                  (:link (str "http://example-blog-url.com") (str (page-address page)))
                   (:guid (str (page-address page)))
-                  (:pubDate (str (page-date
-                                  page
-                                  :format +rfc+)))
+                  (:|pubDate| (str (page-last-modified page :format +rfc+)))
                   (:description
                    "<![CDATA[ "
                    (str (markup (get-content page
@@ -741,7 +742,7 @@ $(xml
 pages/
 ```
 
-The only new function here is `build-time` which returns the string representing the time at which it is called, formatted to the RFC 3339 Internet standard. We also see `(page-date page :format +rfc+)` where `+rfc+` is the format list which corresponds to the aforementioned standard. 
+The only new function here is `build-time` which returns the string representing the time at which it is called, formatted to the RFC 3339 Internet standard. We also see `(page-date page :format +rfc+)` where `+rfc+` is the format list which corresponds to the aforementioned standard. Note the use of the pipe characters around some keywords. This tells our formatter to preserve the case of the tags so that we have a valid feed, otherwise it will convert keywords to all lower case.
 
 Now that we have our RSS feed, we should add it to the header of our `main.html` template. While we're at it, why don't we add a reference to a style sheet!:
 
