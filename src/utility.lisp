@@ -199,7 +199,7 @@ Return the RFC formated time corresponding to when the function is called."
        (,(gensym) nil
 	 :prologue ,(case (caar body)
 			  (:html t)
-			  (:rss "<?xml version='1.0' encoding='utf-8'?>")
+			  (:rss "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
 			  (otherwise nil))
 	 :indent t)
      ,@body))
